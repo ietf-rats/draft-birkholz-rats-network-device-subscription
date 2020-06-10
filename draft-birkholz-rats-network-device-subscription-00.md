@@ -184,7 +184,7 @@ The relevant internal time-related counters defined within {{TPM2.0}} can be see
 {: #attestationstream}
 # Remote Attestation Event Stream
 
-The \<remote-attestation\> Event Stream is an {{RFC8639}} complaint Event Stream which is defined within this section and within the YANG Module of {{-rats-yang-tpm}}.  This Event Stream contains YANG notifications which carry Evidence assisting a Verifier in the appraisal of the Trustworthiness Level of an Attester. Data Nodes within {{configuring}} allow the configuration of this Event Stream’s contents on an Attester.
+The \<remote-attestation\> Event Stream is an {{RFC8639}} complaint Event Stream which is defined within this section and within the YANG Module of {{-rats-yang-tpm}}.  This Event Stream contains YANG notifications which carry Evidence assisting a Verifier in the appraisal of an Attester. Data Nodes within {{configuring}} allow the configuration of this Event Stream’s contents on an Attester.
 
 This \<remote-attestation\> Event Stream may only be exposed on Attesters supporting {{-device-attestation}}.  As with {{-device-attestation}}, it is up to the Verifier to understand which types of cryptoprocessors and keys are acceptable.
 
