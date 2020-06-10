@@ -1,0 +1,288 @@
+module ietf-tpm-remote-attestation-stream {
+  yang-version 1.1;
+  namespace 
+     "urn:ietf:params:xml:ns:yang:ietf-tpm-remote-attestation-stream";
+  prefix tras;
+
+  import ietf-subscribed-notifications { 
+    prefix sn;
+    reference
+      "RFC 8639: Subscription to YANG Notifications";    
+  }
+  import ietf-tpm-remote-attestation { 
+    prefix tpm; 
+    reference  
+      "draft-ietf-rats-yang-tpm-charra";  
+  }
+  import ietf-yang-structure-ext { 
+    prefix sx; 
+    reference
+      "draft-ietf-netmod-yang-data-ext";
+  }
+   
+  organization "IETF";
+  contact
+    "WG Web:   <http://tools.ietf.org/wg/rats/>
+     WG List:  <mailto:rats@ietf.org>
+
+     Editor:   Eric Voit
+               <mailto:evoit@cisco.com>";
+               
+  description
+    "This module contains conceptual YANG specifications for  
+     subscribing to attestation streams being generated from TPM chips.
+    
+     Copyright (c) 2020 IETF Trust and the persons identified
+     as authors of the code. All rights reserved.
+
+     Redistribution and use in source and binary forms, with
+     or without modification, is permitted pursuant to, and
+     subject to the license terms contained in, the Simplified
+     BSD License set forth in Section 4.c of the IETF Trust's
+     Legal Provisions Relating to IETF Documents
+     (https://trustee.ietf.org/license-info).
+     
+     Redistribution and use in source and binary forms, with or
+     without modification, is permitted pursuant to, and subject to
+     the license terms contained in, the Simplified BSD License set
+     forth in Section 4.c of the IETF Trust's Legal Provisions
+     Relating to IETF Documents
+     (https://trustee.ietf.org/license-info).
+
+     This version of this YANG module is part of RFC XXXX
+     (https://www.rfc-editor.org/info/rfcXXXX); see the RFC
+     itself for full legal notices.
+
+     The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL',
+     'SHALL NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED',
+     'NOT RECOMMENDED', 'MAY', and 'OPTIONAL' in this document
+     are to be interpreted as described in BCP 14 (RFC 2119)
+     (RFC 8174) when, and only when, they appear in all
+     capitals, as shown here.";
+  
+  revision 2020-06-10 {
+    description
+      "Initial version.";    
+    reference 
+      "draft-birkholz-rats-network-device-subscription";
+  }
+   
+  /*
+   * IDENTITIES
+   */
+   
+  identity pcr-unsubscribable {
+    base sn:establish-subscription-error;
+    description
+      "Requested PCR is subscribable by the Attester.";
+  }
+  
+  
+  /*
+   * Groupings
+   */ 
+
+  grouping heartbeat {
+    description
+      "Allows an Attester to push verifiable, current TPM PCR values even
+      when there have been no recent changes to PCRs.";    
+    leaf tpm20-subscription-heartbeat {
+      type uint16;
+      description
+        "Number of seconds before the Attestation stream should send a new
+        notification with a fresh quote.  This allows confirmation 
+        that the PCR values haven't changed since the last 
+        tpm20-attestation.";
+    }
+  }
+  
+  
+  /*
+   * RPCs
+   */ 
+  
+  augment "/sn:establish-subscription/sn:input" {
+    when 'derived-from-or-self(sn:stream, "attestation")';
+    description
+      "This augmentation adds a nonce to as a subscription parameters
+       that apply specifically to datastore updates to RPC input.";
+    uses tpm:nonce;
+    leaf-list pcr-index {
+      type tpm:pcr;
+      min-elements 1;
+      description
+        "The numbers/indexes of the PCRs. This will act as a filter for the 
+        subscription so that 'tpm-extend' notifications related to 
+        non-requested PCRs will not be sent to a subscriber.";
+    }
+  }
+  
+  /*
+   * NOTIFICATIONS
+   */  
+
+  notification tpm-extend {
+    description
+      "This notification indicates that a PCR has extended within a TPM based
+      cryptoprocessor.  In less that 10 seconds, it should be followed with 
+      either a tpm12-attestation or tpm20-attestation notification.";
+    uses tpm:certificate-name;
+    leaf pcr-index-changed {
+      type tpm:pcr;
+      mandatory true;
+      description
+        "The number of the PCR extended.";
+    }
+    list attested-event {
+      description
+        "A set of events which extended an Attester PCR.  The sequence of 
+        elements represented in list must match the sequence of events  
+        placed into the TPM.";
+      container attested-event {
+        description
+          "An instance of an event which extended an Attester PCR";
+        leaf extended-with {
+          type binary;
+          mandatory true;
+          description
+            "Information extending the PCR.";
+        }
+        leaf event-type {
+          type identityref {
+            base tpm:attested-event-log-type;
+          }
+          description
+            "Indicates what kind of event happened the Attester thought was 
+            worthy of recording in a PCR.";  
+        }
+        anydata event-details {
+          description
+            "Any structure reference 'event-type' contains supporting 
+            information which allows an Attester to evaluate the trust 
+            implications.
+            
+            Event details may be populated with YANG log structures defined
+            at the bottom of this module.";
+        }
+      }
+    }
+  }  
+
+  notification tpm12-attestation {
+    if-feature "tpm:TPM12";
+    description
+      "Contains an instance of TPM1.2 style signed cryptoprocessor 
+      measurements.  It is supplemented by unsigned Attester information.";
+    uses tpm:tpm12-attestation;
+  }
+
+  notification tpm20-attestation {
+    if-feature "tpm:TPM20";
+    description
+      "Contains an instance of TPM2 style signed cryptoprocessor 
+      measurements.  It is supplemented by unsigned Attester information.";
+    uses tpm:tpm20-attestation;
+  } 
+
+
+  /*
+   * DATA NODES
+   */  
+
+  augment "/tpm:rats-support-structures" {
+    description
+      "Defines platform wide 'attestation' stream subscription parameters.";   
+    leaf marshalling-period {
+      config true;
+      type uint8;
+      default 5;
+      description
+        "The maximum number of seconds between the time an event extends a PCR, 
+        and the 'tpm-extend' notification which reports it to a subscribed
+        Verifier.  This period allows multiple extend operations bundled 
+        together and handled as a group.";
+    }
+    leaf tpm12-subscribed-signature-scheme {
+      if-feature "tpm:TPM12";
+      type leafref {
+        path "../tpm:supported-algos"; 
+          /* a specific algorithm, need to check syntax */
+      }
+      description
+        "A single signature-scheme which will be used to sign the evidence 
+        from a TPM 1.2. which is then placed onto the 'attestation' event
+        stream.";
+    }
+    leaf tpm20-subscribed-signature-scheme {
+      if-feature "tpm:TPM20";
+      type leafref {
+        path "../tpm:supported-algos"; 
+          /* a specific algorithm, need to check syntax */
+      }
+      description
+        "A single signature-scheme which will be used to sign the evidence 
+        from a TPM 2.0. which is then placed onto the 'attestation' event
+        stream.";
+    }    
+    uses heartbeat{
+      if-feature "tpm:TPM20";
+    }
+  }
+  
+  augment "/tpm:rats-support-structures/tpm:tpms" {
+    description
+      "Allows the configuration 'attestation' stream parameters for a TPM.";  
+    leaf leafref-to-keystore {
+      config true;
+      type string;
+      description 
+        "needs to be replaced with Reference to keystore draft.";
+    }
+    choice subscribable {
+      config true;
+      description
+        "Indicates that the set of notifications which comprise the attestation 
+        stream can be modified or tuned by a network adminsitrator.";
+      case tpm12-stream {
+        if-feature "tpm:TPM12";
+        description
+          "Configuration elements for a TPM1.2 event stream.";
+        leaf-list tpm12-pcr-index {
+          type tpm:pcr;
+          description
+            "The numbers/indexes of the PCRs which can be subscribed.";
+        }
+      }
+      case tpm20-stream {
+        if-feature "tpm:TPM20";
+        description
+          "Configuration elements for a TPM2.0 event stream.";
+        leaf-list tpm20-pcr-index {
+          type tpm:pcr;
+          description
+            "The numbers/indexes of the PCRs which can be subscribed.";
+        }
+        /* We need to decide if more than one hash-algo is subscribable */
+      }
+    }
+  }  
+
+  
+  /*
+   * STRUCTURES - these contain the schema of reportable event types
+   */    
+  
+   sx:structure bios-event-log {
+     when 'derived-from(../event-type, "bios-event-log")';
+     description
+       "BIOS/UEFI event log format";
+     uses tpm:bios-event-log;
+   }
+      
+   sx:structure ima-event-log {
+     when 'derived-from(../event-type, "ima-event-log")';
+     description
+       "IMA event log format";
+     uses tpm:ima-event-log;
+   }
+}
