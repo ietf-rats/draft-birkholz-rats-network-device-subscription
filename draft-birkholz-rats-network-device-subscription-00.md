@@ -42,7 +42,7 @@ author:
 
 normative:
   I-D.ietf-rats-architecture: rats-arch
-  I-D.fedorkow-rats-network-device-attestation: device-attestation
+  I-D.ietf-rats-tpm-based-network-device-attest: device-attestation
   I-D.ietf-rats-yang-tpm-charra: rats-yang-tpm
   RFC8639:
   TPM2.0:
@@ -87,7 +87,7 @@ By removing these two adverse effects, it becomes possible for a Verifier to con
 
 # Terminology
 
-The following terms are imported from {{-rats-arch}}: Attester, Evidence, Relying Party, and Verifier.  Also imported are the time definitions time(vg), time(ns), time(eg), time(rg), and time(ra) from that document's appendices.  The following terms at imported from {{RFC8639}}: Event Stream, Subscription, Event Stream Filter, Dynamic Subscription.
+The following terms are imported from {{-rats-arch}}: Attester, Evidence, Relying Party, and Verifier.  Also imported are the time definitions time(VG), time(NS), time(EG), time(RG), and time(RA) from that document's appendices.  The following terms are imported from {{RFC8639}}: Event Stream, Subscription, Event Stream Filter, Dynamic Subscription.
 
 ## Requirements Notation
 
@@ -103,31 +103,31 @@ The following terms are imported from {{-rats-arch}}: Attester, Evidence, Relyin
 .----------.                        .--------------------------.
 | Attester |                        | Relying Party / Verifier |
 '----------'                        '--------------------------'
-   time(vg)                                              |
-     |<---------establish-subscription(<attestation>)--time(ns)
+   time(VG)                                              |
+     |<---------establish-subscription(<attestation>)--time(NS)
      |                                                   |
-   time(eg)                                              |
+   time(EG)                                              |
      |--filter(<tpm-extend>)---------------------------->|
      |--<tpm12-attestation> or <tpm20-attestation>------>|
      |                                                   |
-     |                      verify time(eg) Evidence @ time(rg,ra)
+     |                      verify time(EG) Evidence @ time(RG,RA)
      |                                                   |
      ~                                                   ~
-   time(vg',eg')                                         |
+   time(VG',EG')                                         |
      |--filter(<tpm-extend>)---------------------------->|
      |--<tpm12-attestation> or <tpm20-attestation>------>|
      |                                                   |
-     |                     verify time(eg') Evidence @ time(rg',ra')
+     |                     verify time(EG') Evidence @ time(RG',RA')
 
 
 ~~~~
 {: #sequence title="YANG Subscription Model for Remote Attestation"}
 
-* time(vg,rg,ra) are identical to the corresponding times from Figure 5 of {{-device-attestation}}.  
+* time(VG, RG, RA) are identical to the corresponding times from Figure 5 of {{-device-attestation}}.  
 
-* time(rg',ra') are subsequent instances of the corresponding times from Figure 5 of {{-device-attestation}}.  
+* time(RG', RA') are subsequent instances of the corresponding times from Figure 5 of {{-device-attestation}}.  
 
-* time(ns): The Verifier generates a nonce and makes an {{RFC8639}} \<establish-subscription\> request.  This request also includes the augmentations defined in this document's YANG model.  Key subscription RPC parameters include:
+* time(NS): The Verifier generates a nonce and makes an {{RFC8639}} \<establish-subscription\> request.  This request also includes the augmentations defined in this document's YANG model.  Key subscription RPC parameters include:
 
   * the nonce,
 
@@ -135,21 +135,21 @@ The following terms are imported from {{-rats-arch}}: Attester, Evidence, Relyin
 
   * an optional filter which can reduce the logged events on the \<attestation\> stream pushed to the Verifier. 
 
-* time(eg) – An initial response of Evidence is returned to the Verifier.  This includes:
+* time(EG): An initial response of Evidence is returned to the Verifier.  This includes:
 
-  * a replay of filtered log entries which have extended into a PCR of interest since boot are sent in the \<tpm-extend\> notification, and a
+  * a replay of filtered log entries which have extended into a PCR of interest since boot are sent in the \<tpm-extend\> notification, and
 
-  * a signed TPM quote that contains at least the PCRs from the \<establish-subscription\> RPC are included in a \<tpm12-attestation\> or \<tpm20-attestation\>).  This quote must have included the nonce provided at time(ns).
+  * a signed TPM quote that contains at least the PCRs from the \<establish-subscription\> RPC are included in a \<tpm12-attestation\> or \<tpm20-attestation\>.  This quote must have included the nonce provided at time(NS).
 
-* time(vg',eg') – This occurs when a PCR is extended subsequent to time(eg).  Immediately after the extension, the following information needs to be pushed to the Verifier:   
+* time(VG', EG'): This occurs when a PCR is extended subsequent to time(EG).  Immediately after the extension, the following information needs to be pushed to the Verifier:   
 
   * Any values extended into a PCR of interest, and 
 
-  * a signed TPM Quote showing the result the PCR extension.
+  * a signed TPM Quote showing the result of the PCR extension.
 
 ## Continuously Verifying Freshness 
 
-As there is no new Verifier nonce provided at time(eg'), it is important to validate the freshness of TPM Quotes which are delivered at that time.  The method of doing this verification will vary based on the capabilities of the TPM cryptoprocessor used. 
+As there is no new Verifier nonce provided at time(EG'), it is important to validate the freshness of TPM Quotes which are delivered at that time.  The method of doing this verification will vary based on the capabilities of the TPM cryptoprocessor used. 
 
 ### TPM 1.2 Quote
 
@@ -157,13 +157,13 @@ The {{RFC8639}} notification format includes the \<eventTime\> object.  This can
 
 ### TPM 2 Quote
 
-When the Attester includes a TPM2 compliant cryptoprocessor, internal time-related counters are included within the signed TPM Quote.  By including an initial nonce in the {{RFC8639}} subscription request, fresh values for these counters are pushed as part of the first TPM Quote returned to the Verifier. Then, as shown by {{-TUDA}}, subsequent TPM Quotes delivered to the Verifier can the be appraised for freshness based on the predictable incrementing of these time-related counters.
+When the Attester includes a TPM2 compliant cryptoprocessor, internal time-related counters are included within the signed TPM Quote.  By including an initial nonce in the {{RFC8639}} subscription request, fresh values for these counters are pushed as part of the first TPM Quote returned to the Verifier. Then, as shown by {{-TUDA}}, subsequent TPM Quotes delivered to the Verifier can then be appraised for freshness based on the predictable incrementing of these time-related counters.
 
 The relevant internal time-related counters defined within {{TPM2.0}} can be seen within \<tpms-clock-info\>.   These counters include the \<clock\>, \<reset-counter\>, and \<restart-counter\> objects.  Normative rules for appraising these objects are as follows:
 
-* If the \<clock\> has incremented for no more than the same duration as both the \<eventTime\> and the Verifier's internal time since the initial time(eg) and any previous time(eg'), then the TPM Quote MAY be considered fresh. Note that {{TPM2.0}} allows for +/- 15% clock drift.  However, many chips significantly improve on this maximum drift.  If available, chip specific maximum drifts SHOULD be considered during the appraisal process.
+* If the \<clock\> has incremented for no more than the same duration as both the \<eventTime\> and the Verifier's internal time since the initial time(EG) and any previous time(EG'), then the TPM Quote MAY be considered fresh. Note that {{TPM2.0}} allows for +/- 15% clock drift.  However, many chips significantly improve on this maximum drift.  If available, chip specific maximum drifts SHOULD be considered during the appraisal process.
 
-* If the \<reset-counter\>, \<restart-counter\> has incremented.  The existing subscription MUST be terminated, and a new \<establish-subscription\> SHOULD be generated.
+* If the \<reset-counter\>, \<restart-counter\> has incremented, the existing subscription MUST be terminated, and a new \<establish-subscription\> SHOULD be generated.
 
 * If a TPM Quote on any subscribed PCR has not been pushed to the Verifier for a duration of an Attester defined heartbeat interval, then a new TPM Quote notification SHOULD be sent to the Verifier.  This may often be the case, as certain PCRs might be infrequently updated.
 
@@ -171,12 +171,12 @@ The relevant internal time-related counters defined within {{TPM2.0}} can be see
 .----------.                        .--------------------------.
 | Attester |                        | Relying Party / Verifier |
 '----------'                        '--------------------------'
-   time(vg',eg')                                         |
+   time(VG',EG')                                         |
      |-<tpm20-attestation>------------------------------>|
      |                                    :              |
      ~                           Heartbeat interval      ~
      |                                    :              |
-   time(eg')                              :              |
+   time(EG')                              :              |
      |-<tpm20-attestation>------------------------------>|
      |                                                   |
 ~~~~
@@ -184,9 +184,9 @@ The relevant internal time-related counters defined within {{TPM2.0}} can be see
 {: #attestationstream}
 # Remote Attestation Event Stream
 
-The \<remote-attestation\> Event Stream is an {{RFC8639}} complaint Event Stream which is defined within this section and within the YANG Module of {{-rats-yang-tpm}}.  This Event Stream contains YANG notifications which carry Evidence assisting a Verifier in the appraisal of an Attester. Data Nodes within {{configuring}} allow the configuration of this Event Stream’s contents on an Attester.
+The \<attestation\> Event Stream is an {{RFC8639}} complaint Event Stream which is defined within this section and within the YANG Module of {{-rats-yang-tpm}}.  This Event Stream contains YANG notifications which carry Evidence assisting a Verifier in the appraisal of an Attester. Data Nodes within {{configuring}} allow the configuration of this Event Stream’s contents on an Attester.
 
-This \<remote-attestation\> Event Stream may only be exposed on Attesters supporting {{-device-attestation}}.  As with {{-device-attestation}}, it is up to the Verifier to understand which types of cryptoprocessors and keys are acceptable.
+This \<attestation\> Event Stream may only be exposed on Attesters supporting {{-device-attestation}}.  As with {{-device-attestation}}, it is up to the Verifier to understand which types of cryptoprocessors and keys are acceptable.
 
 ## Subscription to the \<attestation\> Event Stream
 
@@ -329,21 +329,21 @@ All YANG objects above are defined within {{-rats-yang-tpm}}.   The objects MAY 
 
 ## Filtering Evidence at the Attester
 
-It can be useful *not* to receive all Evidence related to a PCR.  An example of this is would be a when a Verifier maintains Known Good Values of a PCR.  In this case, it is not necessary to send each extend operation.   
+It can be useful *not* to receive all Evidence related to a PCR.  An example of this would be when a Verifier maintains Known Good Values of a PCR.  In this case, it is not necessary to send each extend operation.
 
 To accomplish this reduction, when an RFC8639 \<establish-subscription\> RPC is sent, a \<stream-filter\> as per RFC8639, Section 2.2 can be set to discard a \<tpm-extend\> notification when the \<pcr-index-changed\> is uninteresting to the verifier.   
 
 
 ## Replaying previous PCR Extend events
 
-To verify the value of a PCR, a Verifier must either know that the value is a Known Good Value {{KGV}} or be able to reconstruct the hash value by viewing all the PCR-Extends since the Attester rebooted. Wherever a hash reconstruction might be needed, the \<remote-attestation\> Event Stream MUST support the RFC8639 \<replay\> feature. Through the \<replay\> feature, it is possible for a Verifier to retrieve and sequentially hash all of the PCR extending events since an Attester booted. And thus, the Verifier has access to all the evidence needed to verify a PCR’s current value.
+To verify the value of a PCR, a Verifier must either know that the value is a Known Good Value {{KGV}} or be able to reconstruct the hash value by viewing all the PCR-Extends since the Attester rebooted. Wherever a hash reconstruction might be needed, the \<attestation\> Event Stream MUST support the RFC8639 \<replay\> feature. Through the \<replay\> feature, it is possible for a Verifier to retrieve and sequentially hash all of the PCR extending events since an Attester booted. And thus, the Verifier has access to all the evidence needed to verify a PCR’s current value.
 
 
 
 {: #configuring title="Configuring the Attestation Stream"}
 ## Configuring the \<attestation\> Event Stream
 
-{{attestationconfig}} is tree diagram which exposes the operator configurable elements of the \<remote-attestation\> Event Stream. This allows an Attester to select what information should be available on the stream. A fetch operation also allows an external device such as a Verifier to understand the current configuration of stream.
+{{attestationconfig}} is tree diagram which exposes the operator configurable elements of the \<attestation\> Event Stream. This allows an Attester to select what information should be available on the stream. A fetch operation also allows an external device such as a Verifier to understand the current configuration of stream.
 
 Almost all YANG objects below are defined via reference from {{-rats-yang-tpm}}. There is one object which is new with this model however. \<tpm2-heartbeat\> defines the maximum amount of time which should pass before a subscriber to the Event Stream should get a \<tpm20-attestation\> notification from devices which contain a TPM2.
 
