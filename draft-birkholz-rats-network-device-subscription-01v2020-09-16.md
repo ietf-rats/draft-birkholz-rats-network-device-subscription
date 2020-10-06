@@ -42,7 +42,7 @@ author:
 
 normative:
   I-D.ietf-rats-architecture: rats-arch
-  I-D.fedorkow-rats-network-device-attestation: device-attestation
+  I-D.ietf-rats-tpm-based-network-device-attest: device-attestation
   I-D.ietf-rats-yang-tpm-charra: rats-yang-tpm
   RFC8639:
   TPM2.0:

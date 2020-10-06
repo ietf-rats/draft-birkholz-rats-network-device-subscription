@@ -5,10 +5,10 @@
 RATS Working Group                                           H. Birkholz
 Internet-Draft                                            Fraunhofer SIT
 Intended status: Standards Track                                 E. Voit
-Expires: April 5, 2021                                             Cisco
+Expires: April 9, 2021                                             Cisco
                                                                   W. Pan
                                                                   Huawei
-                                                        October 02, 2020
+                                                        October 06, 2020
 
 
                  Attestation Event Stream Subscription
@@ -34,7 +34,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on April 5, 2021.
+   This Internet-Draft will expire on April 9, 2021.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Birkholz, et al.          Expires April 5, 2021                 [Page 1]
+Birkholz, et al.          Expires April 9, 2021                 [Page 1]
 
 Internet-Draft              RATS Subscription               October 2020
 
@@ -92,7 +92,7 @@ Table of Contents
 
 1.  Introduction
 
-   [I-D.fedorkow-rats-network-device-attestation] and
+   [I-D.ietf-rats-tpm-based-network-device-attest] and
    [I-D.ietf-rats-yang-tpm-charra] define the operational prerequisites
    and a YANG Model for the acquisition of Evidence from a TPM-based
    network device.  However there is a limitation inherant in the
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Birkholz, et al.          Expires April 5, 2021                 [Page 2]
+Birkholz, et al.          Expires April 9, 2021                 [Page 2]
 
 Internet-Draft              RATS Subscription               October 2020
 
@@ -155,8 +155,8 @@ Internet-Draft              RATS Subscription               October 2020
 3.1.  Sequence Diagram
 
    Figure 1 below is a sequence diagram which updates Figure 5 of
-   [I-D.fedorkow-rats-network-device-attestation].  This sequence
-   diagram replaces the [I-D.fedorkow-rats-network-device-attestation]
+   [I-D.ietf-rats-tpm-based-network-device-attest].  This sequence
+   diagram replaces the [I-D.ietf-rats-tpm-based-network-device-attest]
    challenge-response interaction model with an [RFC8639] Dynamic
    Subscription to an <attestation> Event Stream.  The contents of the
    <attestation> Event Stream are defined below within Section 4.
@@ -165,7 +165,7 @@ Internet-Draft              RATS Subscription               October 2020
 
 
 
-Birkholz, et al.          Expires April 5, 2021                 [Page 3]
+Birkholz, et al.          Expires April 9, 2021                 [Page 3]
 
 Internet-Draft              RATS Subscription               October 2020
 
@@ -194,10 +194,10 @@ Internet-Draft              RATS Subscription               October 2020
          Figure 1: YANG Subscription Model for Remote Attestation
 
    o  time(VG,RG,RA) are identical to the corresponding times from
-      Figure 5 of [I-D.fedorkow-rats-network-device-attestation].
+      Figure 5 of [I-D.ietf-rats-tpm-based-network-device-attest].
 
    o  time(RG',RA') are subsequent instances of the corresponding times
-      from Figure 5 of [I-D.fedorkow-rats-network-device-attestation].
+      from Figure 5 of [I-D.ietf-rats-tpm-based-network-device-attest].
 
    o  time(NS): The Verifier generates a nonce and makes an [RFC8639]
       <establish-subscription> request.  This request also includes the
@@ -221,7 +221,7 @@ Internet-Draft              RATS Subscription               October 2020
 
 
 
-Birkholz, et al.          Expires April 5, 2021                 [Page 4]
+Birkholz, et al.          Expires April 9, 2021                 [Page 4]
 
 Internet-Draft              RATS Subscription               October 2020
 
@@ -277,7 +277,7 @@ Internet-Draft              RATS Subscription               October 2020
 
 
 
-Birkholz, et al.          Expires April 5, 2021                 [Page 5]
+Birkholz, et al.          Expires April 9, 2021                 [Page 5]
 
 Internet-Draft              RATS Subscription               October 2020
 
@@ -323,8 +323,8 @@ Internet-Draft              RATS Subscription               October 2020
    contents on an Attester.
 
    This <attestation> Event Stream may only be exposed on Attesters
-   supporting [I-D.fedorkow-rats-network-device-attestation].  As with
-   [I-D.fedorkow-rats-network-device-attestation], it is up to the
+   supporting [I-D.ietf-rats-tpm-based-network-device-attest].  As with
+   [I-D.ietf-rats-tpm-based-network-device-attest], it is up to the
    Verifier to understand which types of cryptoprocessors and keys are
    acceptable.
 
@@ -333,7 +333,7 @@ Internet-Draft              RATS Subscription               October 2020
 
 
 
-Birkholz, et al.          Expires April 5, 2021                 [Page 6]
+Birkholz, et al.          Expires April 9, 2021                 [Page 6]
 
 Internet-Draft              RATS Subscription               October 2020
 
@@ -389,7 +389,7 @@ Internet-Draft              RATS Subscription               October 2020
 
 
 
-Birkholz, et al.          Expires April 5, 2021                 [Page 7]
+Birkholz, et al.          Expires April 9, 2021                 [Page 7]
 
 Internet-Draft              RATS Subscription               October 2020
 
@@ -445,7 +445,7 @@ Internet-Draft              RATS Subscription               October 2020
 
 
 
-Birkholz, et al.          Expires April 5, 2021                 [Page 8]
+Birkholz, et al.          Expires April 9, 2021                 [Page 8]
 
 Internet-Draft              RATS Subscription               October 2020
 
@@ -501,7 +501,7 @@ Internet-Draft              RATS Subscription               October 2020
 
 
 
-Birkholz, et al.          Expires April 5, 2021                 [Page 9]
+Birkholz, et al.          Expires April 9, 2021                 [Page 9]
 
 Internet-Draft              RATS Subscription               October 2020
 
@@ -557,7 +557,7 @@ Internet-Draft              RATS Subscription               October 2020
 
 
 
-Birkholz, et al.          Expires April 5, 2021                [Page 10]
+Birkholz, et al.          Expires April 9, 2021                [Page 10]
 
 Internet-Draft              RATS Subscription               October 2020
 
@@ -613,7 +613,7 @@ Internet-Draft              RATS Subscription               October 2020
 
 
 
-Birkholz, et al.          Expires April 5, 2021                [Page 11]
+Birkholz, et al.          Expires April 9, 2021                [Page 11]
 
 Internet-Draft              RATS Subscription               October 2020
 
@@ -669,7 +669,7 @@ Internet-Draft              RATS Subscription               October 2020
 
 
 
-Birkholz, et al.          Expires April 5, 2021                [Page 12]
+Birkholz, et al.          Expires April 9, 2021                [Page 12]
 
 Internet-Draft              RATS Subscription               October 2020
 
@@ -725,7 +725,7 @@ Internet-Draft              RATS Subscription               October 2020
 
 
 
-Birkholz, et al.          Expires April 5, 2021                [Page 13]
+Birkholz, et al.          Expires April 9, 2021                [Page 13]
 
 Internet-Draft              RATS Subscription               October 2020
 
@@ -781,7 +781,7 @@ Internet-Draft              RATS Subscription               October 2020
 
 
 
-Birkholz, et al.          Expires April 5, 2021                [Page 14]
+Birkholz, et al.          Expires April 9, 2021                [Page 14]
 
 Internet-Draft              RATS Subscription               October 2020
 
@@ -837,7 +837,7 @@ Internet-Draft              RATS Subscription               October 2020
 
 
 
-Birkholz, et al.          Expires April 5, 2021                [Page 15]
+Birkholz, et al.          Expires April 9, 2021                [Page 15]
 
 Internet-Draft              RATS Subscription               October 2020
 
@@ -893,7 +893,7 @@ Internet-Draft              RATS Subscription               October 2020
 
 
 
-Birkholz, et al.          Expires April 5, 2021                [Page 16]
+Birkholz, et al.          Expires April 9, 2021                [Page 16]
 
 Internet-Draft              RATS Subscription               October 2020
 
@@ -949,7 +949,7 @@ Internet-Draft              RATS Subscription               October 2020
 
 
 
-Birkholz, et al.          Expires April 5, 2021                [Page 17]
+Birkholz, et al.          Expires April 9, 2021                [Page 17]
 
 Internet-Draft              RATS Subscription               October 2020
 
@@ -1005,7 +1005,7 @@ Internet-Draft              RATS Subscription               October 2020
 
 
 
-Birkholz, et al.          Expires April 5, 2021                [Page 18]
+Birkholz, et al.          Expires April 9, 2021                [Page 18]
 
 Internet-Draft              RATS Subscription               October 2020
 
@@ -1061,7 +1061,7 @@ Internet-Draft              RATS Subscription               October 2020
 
 
 
-Birkholz, et al.          Expires April 5, 2021                [Page 19]
+Birkholz, et al.          Expires April 9, 2021                [Page 19]
 
 Internet-Draft              RATS Subscription               October 2020
 
@@ -1074,17 +1074,17 @@ Internet-Draft              RATS Subscription               October 2020
 
 8.1.  Normative References
 
-   [I-D.fedorkow-rats-network-device-attestation]
-              Fedorkow, G., Voit, E., and J. Fitzgerald-McKay, "TPM-
-              based Network Device Remote Integrity Verification",
-              draft-fedorkow-rats-network-device-attestation-05 (work in
-              progress), April 2020.
-
    [I-D.ietf-rats-architecture]
               Birkholz, H., Thaler, D., Richardson, M., Smith, N., and
               W. Pan, "Remote Attestation Procedures Architecture",
               draft-ietf-rats-architecture-06 (work in progress),
               September 2020.
+
+   [I-D.ietf-rats-tpm-based-network-device-attest]
+              Fedorkow, G., Voit, E., and J. Fitzgerald-McKay, "TPM-
+              based Network Device Remote Integrity Verification",
+              draft-ietf-rats-tpm-based-network-device-attest-04 (work
+              in progress), September 2020.
 
    [I-D.ietf-rats-yang-tpm-charra]
               Birkholz, H., Eckel, M., Voit, E., Bhandari, S., Sulzen,
@@ -1117,7 +1117,7 @@ Internet-Draft              RATS Subscription               October 2020
 
 
 
-Birkholz, et al.          Expires April 5, 2021                [Page 20]
+Birkholz, et al.          Expires April 9, 2021                [Page 20]
 
 Internet-Draft              RATS Subscription               October 2020
 
@@ -1173,7 +1173,7 @@ Authors' Addresses
 
 
 
-Birkholz, et al.          Expires April 5, 2021                [Page 21]
+Birkholz, et al.          Expires April 9, 2021                [Page 21]
 
 Internet-Draft              RATS Subscription               October 2020
 
@@ -1229,4 +1229,4 @@ Internet-Draft              RATS Subscription               October 2020
 
 
 
-Birkholz, et al.          Expires April 5, 2021                [Page 22]
+Birkholz, et al.          Expires April 9, 2021                [Page 22]
