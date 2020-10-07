@@ -391,7 +391,7 @@ This YANG module imports modules from {{-rats-yang-tpm}} and {{RFC8639}}.  It is
 
 ~~~~ YANG
 <CODE BEGINS> ietf-rats-attestation-stream@2020-09-17.yang
-{::include /media/sf_rats/ietf-tpm-remote-attestation-stream@2020-09-17.yang}
+{::include ietf-tpm-remote-attestation-stream@2020-09-17.yang}
 <CODE ENDS>
 ~~~~ 
 
