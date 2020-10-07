@@ -95,7 +95,7 @@ Table of Contents
    [I-D.ietf-rats-tpm-based-network-device-attest] and
    [I-D.ietf-rats-yang-tpm-charra] define the operational prerequisites
    and a YANG Model for the acquisition of Evidence from a TPM-based
-   network device.  However there is a limitation inherant in the
+   network device.  However, there is a limitation inherent in the
    challenge-response interaction models upon which these documents are
    based.  This limitation is that it is up to the Verifier to request
    Evidence.  The result is that the interval between the occurrence of
@@ -122,16 +122,16 @@ Internet-Draft              RATS Subscription               October 2020
    which exists upon the Attester.  When subscribed, the Attester will
    continuously stream a requested set of Evidence to the Verifier.
 
-   The second adverse effect results from the nonce based challenge-
-   response of [I-D.ietf-rats-yang-tpm-charra].  In that document an
-   Attester must wait for a new nonce from a Verifier before it
-   generates a new TPM Quote.  To address delays resulting from such a
-   wait, this specification enables freshness to be asserted
-   asynchronously.
+   The second adverse effect results from the challenge-response
+   interaction of [I-D.ietf-rats-yang-tpm-charra] being nonce-based.  In
+   [I-D.ietf-rats-yang-tpm-charra] an Attester must wait for a new nonce
+   provided by a Verifier before it can generate a new TPM Quote.  To
+   address delays resulting from such a wait, this specification enables
+   evidence freshness to be asserted asynchronously.
 
    By removing these two adverse effects, it becomes possible for a
-   Verifier to continously maintain an appraisal of the Attested device
-   without relying on continous polling.
+   Verifier to continuously maintain an appraisal of the Attested device
+   without relying on continuous polling.
 
 2.  Terminology
 
@@ -155,13 +155,13 @@ Internet-Draft              RATS Subscription               October 2020
 3.1.  Sequence Diagram
 
    Figure 1 below is a sequence diagram which updates Figure 5 of
-   [I-D.ietf-rats-tpm-based-network-device-attest].  This sequence
-   diagram replaces the [I-D.ietf-rats-tpm-based-network-device-attest]
+   [I-D.ietf-rats-tpm-based-network-device-attest] based on the Streamed
+   Attestation model defined in
+   [I-D.ietf-rats-reference-interaction-models].  This sequence diagram
+   replaces the [I-D.ietf-rats-tpm-based-network-device-attest]
    challenge-response interaction model with an [RFC8639] Dynamic
    Subscription to an <attestation> Event Stream.  The contents of the
    <attestation> Event Stream are defined below within Section 4.
-
-
 
 
 
@@ -250,25 +250,25 @@ Internet-Draft              RATS Subscription               October 2020
 
    The [RFC8639] notification format includes the <eventTime> object.
    This can be used to determine the amount of time subsequent to the
-   initial subscription each notification was sent.  However this time
+   initial subscription each notification was sent.  However, this time
    is not part of the signed results which are returned from the Quote,
    and therefore is not trustworthy as objects returned in the Quote.
-   Therefore a Verifier MUST periodically issue a new nonce, and receive
-   this nonce within a TPM quote response in order to ensure the
-   freshness of the results.  This can be done using the <tpm12-
-   challenge-response-attestation> RPC from
+   In consequence, a Verifier MUST periodically issue a new nonce, and
+   receive this nonce within a TPM quote response in order to ensure the
+   freshness of the results.  A new nonce is provided to the Verifier
+   using the <tpm12-challenge-response-attestation> RPC from
    [I-D.ietf-rats-yang-tpm-charra].
 
 3.2.2.  TPM 2 Quote
 
-   When the Attester includes a TPM2 compliant cryptoprocessor, internal
-   time-related counters are included within the signed TPM Quote.  By
-   including a initial nonce in the [RFC8639] subscription request,
+   When an Attester includes a TPM2 compliant cryptoprocessor, internal
+   time-related counters are included within a signed TPM Quote.  By
+   including an initial nonce in the [RFC8639] subscription request,
    fresh values for these counters are pushed as part of the first TPM
-   Quote returned to the Verifier.  And then as shown by
+   Quote returned to the Verifier.  As shown by
    [I-D.birkholz-rats-tuda], subsequent TPM Quotes delivered to the
    Verifier can the be appraised for freshness based on the predictable
-   incrementing of these time-related countersr.
+   increments of these time-related counters.
 
    The relevant internal time-related counters defined within [TPM2.0]
    can be seen within <tpms-clock-info>.  These counters include the
@@ -1137,6 +1137,14 @@ Internet-Draft              RATS Subscription               October 2020
               06, 1 September 2020, <http://www.ietf.org/internet-
               drafts/draft-ietf-rats-architecture-06.txt>.
 
+   [I-D.ietf-rats-reference-interaction-models]
+              Birkholz, H., Eckel, M., Newton, C., and L. Chen,
+              "Reference Interaction Models for Remote Attestation
+              Procedures", Work in Progress, Internet-Draft, draft-ietf-
+              rats-reference-interaction-models-00, 9 September 2020,
+              <http://www.ietf.org/internet-drafts/draft-ietf-rats-
+              reference-interaction-models-00.txt>.
+
    [I-D.ietf-rats-tpm-based-network-device-attest]
               Fedorkow, G., Voit, E., and J. Fitzgerald-McKay, "TPM-
               based Network Device Remote Integrity Verification", Work
@@ -1163,20 +1171,17 @@ Internet-Draft              RATS Subscription               October 2020
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/info/rfc8174>.
 
-   [RFC8639]  Voit, E., Clemm, A., Gonzalez Prieto, A., Nilsen-Nygaard,
-              E., and A. Tripathy, "Subscription to YANG Notifications",
-              RFC 8639, DOI 10.17487/RFC8639, September 2019,
-              <https://www.rfc-editor.org/info/rfc8639>.
-
-
-
-
 
 
 Birkholz, et al.          Expires 10 April 2021                [Page 21]
 
 Internet-Draft              RATS Subscription               October 2020
 
+
+   [RFC8639]  Voit, E., Clemm, A., Gonzalez Prieto, A., Nilsen-Nygaard,
+              E., and A. Tripathy, "Subscription to YANG Notifications",
+              RFC 8639, DOI 10.17487/RFC8639, September 2019,
+              <https://www.rfc-editor.org/info/rfc8639>.
 
    [TPM2.0]   TCG, "TPM 2.0 Library Specification", n.d.,
               <https://trustedcomputinggroup.org/resource/tpm-library-
@@ -1222,16 +1227,17 @@ Authors' Addresses
    Email: henk.birkholz@sit.fraunhofer.de
 
 
-   Eric Voit
-   Cisco Systems, Inc.
-
-   Email: evoit@cisco.com
-
 
 
 Birkholz, et al.          Expires 10 April 2021                [Page 22]
 
 Internet-Draft              RATS Subscription               October 2020
+
+
+   Eric Voit
+   Cisco Systems, Inc.
+
+   Email: evoit@cisco.com
 
 
    Wei Pan
@@ -1242,12 +1248,6 @@ Internet-Draft              RATS Subscription               October 2020
    China
 
    Email: william.panwei@huawei.com
-
-
-
-
-
-
 
 
 

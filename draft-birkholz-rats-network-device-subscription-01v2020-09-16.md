@@ -44,6 +44,7 @@ normative:
   I-D.ietf-rats-architecture: rats-arch
   I-D.ietf-rats-tpm-based-network-device-attest: device-attestation
   I-D.ietf-rats-yang-tpm-charra: rats-yang-tpm
+  I-D.ietf-rats-reference-interaction-models: reference-interactions
   RFC8639:
   TPM2.0:
     author:
@@ -70,9 +71,9 @@ This document defines how to subscribe to an Event Stream of attestation related
 
 # Introduction
 
-{{-device-attestation}} and {{-rats-yang-tpm}} define the operational prerequisites and a YANG Model for the acquisition of Evidence from a TPM-based network device.  However there is a limitation inherant in the challenge-response interaction models upon which these documents are based. This limitation is that it is up to the Verifier to request Evidence.  The result is that the interval between the occurrence of a security event, and the event's visibility within the Relying Party can be unacceptably long.  
+{{-device-attestation}} and {{-rats-yang-tpm}} define the operational prerequisites and a YANG Model for the acquisition of Evidence from a TPM-based network device.  However, there is a limitation inherent in the challenge-response interaction models upon which these documents are based. This limitation is that it is up to the Verifier to request Evidence.  The result is that the interval between the occurrence of a security event, and the event's visibility within the Relying Party can be unacceptably long.  
 
-This limitation results in two adverse effects:   
+This limitation results in two adverse effects:
 
 1. Evidence is not streamed to an interested Verifier as soon as it is generated.
 
@@ -80,9 +81,9 @@ This limitation results in two adverse effects:
 
 This specification addresses the first adverse effect by enabling a Verifier to subscribe via {{RFC8639}} to an \<attestation\> Event Stream which exists upon the Attester.  When subscribed, the Attester will continuously stream a requested set of Evidence to the Verifier.  
 
-The second adverse effect results from the nonce based challenge-response of {{-rats-yang-tpm}}. In that document an Attester must wait for a new nonce from a Verifier before it generates a new TPM Quote.  To address delays resulting from such a wait, this specification enables freshness to be asserted asynchronously. 
+The second adverse effect results from the challenge-response interaction of {{-rats-yang-tpm}} being nonce-based. In {{-rats-yang-tpm}} an Attester must wait for a new nonce provided by a Verifier before it can generate a new TPM Quote.  To address delays resulting from such a wait, this specification enables evidence freshness to be asserted asynchronously. 
 
-By removing these two adverse effects, it becomes possible for a Verifier to continously maintain an appraisal of the Attested device without relying on continous polling. 
+By removing these two adverse effects, it becomes possible for a Verifier to continuously maintain an appraisal of the Attested device without relying on continuous polling. 
 
 # Terminology
 
@@ -96,7 +97,7 @@ The following terms are imported from {{-rats-arch}}: Attester, Evidence, Relyin
 
 ## Sequence Diagram
 
-{{sequence}} below is a sequence diagram which updates Figure 5 of {{-device-attestation}}.  This sequence diagram replaces the {{-device-attestation}} challenge-response interaction model with an {{RFC8639}} Dynamic Subscription to an  \<attestation\> Event Stream.  The contents of the \<attestation\> Event Stream are defined below within {{attestationstream}}.  
+{{sequence}} below is a sequence diagram which updates Figure 5 of {{-device-attestation}} based on the Streamed Attestation model defined in {{-reference-interactions}}.  This sequence diagram replaces the {{-device-attestation}} challenge-response interaction model with an {{RFC8639}} Dynamic Subscription to an \<attestation\> Event Stream.  The contents of the \<attestation\> Event Stream are defined below within {{attestationstream}}.  
 
 ~~~~
 .----------.                        .--------------------------.
@@ -152,11 +153,11 @@ As there is no new Verifier nonce provided at time(EG'), it is important to vali
 
 ### TPM 1.2 Quote
 
-The {{RFC8639}} notification format includes the \<eventTime\> object.  This can be used to determine the amount of time subsequent to the initial subscription each notification was sent.  However this time is not part of the signed results which are returned from the Quote, and therefore is not trustworthy as objects returned in the Quote.  Therefore a Verifier MUST periodically issue a new nonce, and receive this nonce within a TPM quote response in order to ensure the freshness of the results.  This can be done using the \<tpm12-challenge-response-attestation\> RPC from {{-rats-yang-tpm}}.
+The {{RFC8639}} notification format includes the \<eventTime\> object.  This can be used to determine the amount of time subsequent to the initial subscription each notification was sent.  However, this time is not part of the signed results which are returned from the Quote, and therefore is not trustworthy as objects returned in the Quote.  In consequence, a Verifier MUST periodically issue a new nonce, and receive this nonce within a TPM quote response in order to ensure the freshness of the results.  A new nonce is provided to the Verifier using the \<tpm12-challenge-response-attestation\> RPC from {{-rats-yang-tpm}}.
 
 ### TPM 2 Quote
 
-When the Attester includes a TPM2 compliant cryptoprocessor, internal time-related counters are included within the signed TPM Quote.  By including a initial nonce in the {{RFC8639}} subscription request, fresh values for these counters are pushed as part of the first TPM Quote returned to the Verifier. And then as shown by {{-TUDA}}, subsequent TPM Quotes delivered to the Verifier can the be appraised for freshness based on the predictable incrementing of these time-related countersr.
+When an Attester includes a TPM2 compliant cryptoprocessor, internal time-related counters are included within a signed TPM Quote.  By including an initial nonce in the {{RFC8639}} subscription request, fresh values for these counters are pushed as part of the first TPM Quote returned to the Verifier. As shown by {{-TUDA}}, subsequent TPM Quotes delivered to the Verifier can the be appraised for freshness based on the predictable increments of these time-related counters.
 
 The relevant internal time-related counters defined within {{TPM2.0}} can be seen within \<tpms-clock-info\>.   These counters include the \<clock\>, \<reset-counter\>, and \<restart-counter\> objects.  The rules for appraising these objects are as follows:
 
