@@ -1,0 +1,18 @@
+  augment /tpm:rats-support-structures:
+    +--rw marshalling-period?                  uint8
+    +--rw tpm12-subscribed-signature-scheme?
+    |   -> ../tpm:attester-supported-algos/tpm12-asymmetric-signing
+    |      {taa:TPM12}?
+    +--rw tpm20-subscribed-signature-scheme?
+    |   -> ../tpm:attester-supported-algos/tpm20-asymmetric-signing
+    |      {taa:TPM20}?
+    +--rw tpm20-subscription-heartbeat?        uint16
+  augment /tpm:rats-support-structures/tpm:tpms:
+    +--rw subscription-aik?        tpm:certificate-name-ref
+    +--rw (subscribable)?
+       +--:(tpm12-stream) {taa:TPM12}?
+       |  +--rw TPM12-hash-algo?   identityref
+       |  +--rw tpm12-pcr-index*   tpm:pcr
+       +--:(tpm20-stream) {taa:TPM20}?
+          +--rw TPM20-hash-algo?   identityref
+          +--rw tpm20-pcr-index*   tpm:pcr
