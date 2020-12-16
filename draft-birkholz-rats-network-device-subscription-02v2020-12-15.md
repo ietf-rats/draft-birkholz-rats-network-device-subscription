@@ -233,8 +233,8 @@ For TPM2, make sure that every requested PCR is sent within an \<tpm20-attestati
 This notification documents when a subscribed PCR is extended within a single TPM cryptoprocessor.  It SHOULD be emmitted no less than the \<marshalling-period\> after an the PCR is first extended.  (The reason for the marshalling is that it is quite possible that multiple extensions to the same PCR have been made in quick succession, and these should be reflected in the same notification.)  This notification MUST be emmitted prior to a \<tpm12-attestation\> or \<tpm20-attestation\> notification which has included and signed the results of any specific PCR extension.   If pcr extending events occur during the generation of the \<tpm12-attestation\> or \<tpm20-attestation\> notification, the marshalling period MUST be extended so that a new \<pcr-extend\> is not sent until the corresponding notifications have been sent.
 
 ~~~~
-    +---n tpm-extend
-       +--ro certificate-name?    certificate-name-ref
+    +---n pcr-extend
+       +--ro certificate-name     certificate-name-ref
        +--ro pcr-index-changed*   tpm:pcr
        +--ro attested-event* []
           +--ro attested-event
@@ -261,7 +261,7 @@ This notification documents when a subscribed PCR is extended within a single TP
                 |     +--ro template-hash?             binary
                 |     +--ro pcr-index?                 pcr
                 |     +--ro signature?                 binary
-                +--:(netequip-boot)
+                +--:(netequip-boot-event-log)
                    +--ro boot-event-entry* [event-number]
                       +--ro event-number               uint64
                       +--ro filename-hint?             string
@@ -282,31 +282,13 @@ This notification contains an instance of a TPM1.2 style signed cryptoprocessor 
 
 ~~~~
     +---n tpm12-attestation {taa:TPM12}?
-       +--ro certificate-name?            certificate-name-ref
-       +--ro up-time?                     uint32
-       +--ro node-id?                     string
-       +--ro node-physical-index?         int32 {ietfhw:entity-mib}?
-       +--ro fixed?                       binary
-       +--ro external-data?               binary
-       +--ro signature-size?              uint32
-       +--ro signature?                   binary
-       +--ro (tpm12-quote)
-          +--:(tpm12-quote1)
-          |  +--ro version* []
-          |  |  +--ro major?      uint8
-          |  |  +--ro minor?      uint8
-          |  |  +--ro revMajor?   uint8
-          |  |  +--ro revMinor?   uint8
-          |  +--ro digest-value?          binary
-          |  +--ro TPM_PCR_COMPOSITE* []
-          |     +--ro pcr-index*         pcr
-          |     +--ro value-size?        uint32
-          |     +--ro tpm12-pcr-value*   binary
-          +--:(tpm12-quote2)
-             +--ro tag?                   uint8
-             +--ro pcr-index*             pcr
-             +--ro locality-at-release?   uint8
-             +--ro digest-at-release?     binary
+       +--ro certificate-name       tpm:certificate-name-ref
+       +--ro up-time?               uint32
+       +--ro TPM_QUOTE2?            binary
+       +--ro TPM12-hash-algo?       identityref
+       +--ro unsigned-pcr-values* []
+          +--ro pcr-index*   tpm:pcr
+          +--ro pcr-value*   binary
 ~~~~
 
 All YANG objects above are defined within {{-rats-yang-tpm}}.  The \<tpm12-attestation\> is not replayable. 
@@ -321,12 +303,10 @@ This notification contains an instance of TPM2 style signed cryptoprocessor meas
 
 ~~~~
     +---n tpm20-attestation {taa:TPM20}?
-       +--ro certificate-name?      certificate-name-ref
+       +--ro certificate-name       tpm:certificate-name-ref
        +--ro TPMS_QUOTE_INFO        binary
        +--ro quote-signature?       binary
        +--ro up-time?               uint32
-       +--ro node-id?               string
-       +--ro node-physical-index?   int32 {ietfhw:entity-mib}?
        +--ro unsigned-pcr-values* []
           +--ro TPM20-hash-algo?   identityref
           +--ro pcr-values* [pcr-index]
@@ -356,29 +336,24 @@ To verify the value of a PCR, a Verifier must either know that the value is a kn
 Almost all YANG objects below are defined via reference from {{-rats-yang-tpm}}. There is one object which is new with this model however. \<tpm2-heartbeat\> defines the maximum amount of time which should pass before a subscriber to the Event Stream should get a \<tpm20-attestation\> notification from devices which contain a TPM2.
 
 ~~~~
-  +--ro rats-support-structures
-     +--ro tpms* [tpm-name]
-     |  +--ro tpms:leafref-to-keystore?    string
-     |  +--ro (tpms:subscribable)?
-     |     +--:(tpms:tpm12-stream) {tpm:TPM12}?
-     |     |  +--ro tpms:pcr-index*        pcr
-     |     +--:(tpms:tpm20-stream) {tpm:TPM20}?
-     |        +--ro tpms:pcr-list* []
-     |           +--ro tpms:pcr
-     |              +--ro tpms:pcr-index*                    pcr
-     |              +--ro (tpms:algo-registry-type)
-     |                 +--:(tpms:tcg)
-     |                 |  +--ro tpms:tcg-hash-algo-id?       uint16
-     |                 +--:(tpms:ietf)
-     |                    +--ro tpms:ietf-ni-hash-algo-id?   uint8
-     +--ro tpms:marshalling-period?           uint8
-     +--ro tpms:TPM_SIG_SCHEME-value?         enumeration {tpm:TPM12}?
-     +--ro (tpms:signature-identifier-type) {tpm:TPM20}?
-     |  +--:(tpms:TPM_ALG_ID)
-     |  |  +--ro tpms:TPM_ALG_ID-value?       enumeration
-     |  +--:(tpms:COSE_Algorithm)
-     |     +--ro tpms:COSE_Algorithm-value?   int32
-     +--ro tpms:tpm20-heartbeat?              uint8
+  augment /tpm:rats-support-structures:
+    +--rw marshalling-period?                  uint8
+    +--rw tpm12-subscribed-signature-scheme?
+    |   -> ../tpm:attester-supported-algos/tpm12-asymmetric-signing
+    |      {taa:TPM12}?
+    +--rw tpm20-subscribed-signature-scheme?
+    |   -> ../tpm:attester-supported-algos/tpm20-asymmetric-signing
+    |      {taa:TPM20}?
+    +--rw tpm20-subscription-heartbeat?        uint16
+  augment /tpm:rats-support-structures/tpm:tpms:
+    +--rw subscription-aik?        tpm:certificate-name-ref
+    +--rw (subscribable)?
+       +--:(tpm12-stream) {taa:TPM12}?
+       |  +--rw TPM12-hash-algo?   identityref
+       |  +--rw tpm12-pcr-index*   tpm:pcr
+       +--:(tpm20-stream) {taa:TPM20}?
+          +--rw TPM20-hash-algo?   identityref
+          +--rw tpm20-pcr-index*   tpm:pcr
 ~~~~
 {: #attestationconfig title="Configuring the \<attestation\> Event Stream"}
 

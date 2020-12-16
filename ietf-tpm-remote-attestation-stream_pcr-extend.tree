@@ -1,0 +1,37 @@
+    +---n pcr-extend
+       +--ro certificate-name     certificate-name-ref
+       +--ro pcr-index-changed*   tpm:pcr
+       +--ro attested-event* []
+          +--ro attested-event
+             +--ro extended-with             binary
+             +--ro (event-details)?
+                +--:(bios-event-log)
+                |  +--ro bios-event-entry* [event-number]
+                |     +--ro event-number    uint32
+                |     +--ro event-type?     uint32
+                |     +--ro pcr-index?      pcr
+                |     +--ro digest-list* []
+                |     |  +--ro hash-algo?   identityref
+                |     |  +--ro digest*      binary
+                |     +--ro event-size?     uint32
+                |     +--ro event-data*     uint8
+                +--:(ima-event-log)
+                |  +--ro ima-event-entry* [event-number]
+                |     +--ro event-number               uint64
+                |     +--ro ima-template?              string
+                |     +--ro filename-hint?             string
+                |     +--ro filedata-hash?             binary
+                |     +--ro filedata-hash-algorithm?   string
+                |     +--ro template-hash-algorithm?   string
+                |     +--ro template-hash?             binary
+                |     +--ro pcr-index?                 pcr
+                |     +--ro signature?                 binary
+                +--:(netequip-boot-event-log)
+                   +--ro boot-event-entry* [event-number]
+                      +--ro event-number               uint64
+                      +--ro filename-hint?             string
+                      +--ro filedata-hash?             binary
+                      +--ro filedata-hash-algorithm?   string
+                      +--ro file-version?              string
+                      +--ro file-type?                 string
+                      +--ro pcr-index?                 pcr
