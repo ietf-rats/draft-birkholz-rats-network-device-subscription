@@ -122,7 +122,7 @@ The following terms are imported from {{-rats-arch}}: Attester, Evidence, Relyin
 ~~~~
 {: #sequence title="YANG Subscription Model for Remote Attestation"}
 
-* time(VG,RG,RA) are identical to the corresponding times from Figure 5 of {{-device-attestation}}.
+* time(VG,RG,RA) are identical to the corresponding time definitions from {{-device-attestation}}. Time(RG',RA') are subsequent instances of the corresponding times.
 
 * time(RG',RA') are subsequent instances of the corresponding times from Figure 5 of {{-device-attestation}}.
 
@@ -184,7 +184,7 @@ The relevant internal time-related counters defined within {{TPM2.0}} can be see
 {: #attestationstream}
 # Remote Attestation Event Stream
 
-The \<attestation\> Event Stream is an {{RFC8639}} complaint Event Stream which is defined within this section and within the YANG Module of {{-rats-yang-tpm}}. This Event Stream contains YANG notifications which carry Evidence which assists a Verifier in appraising the Trustworthiness Level of an Attester. Data Nodes within {{configuring}} allow the configuration of this Event Stream’s contents on an Attester.
+The \<attestation\> Event Stream is an {{RFC8639}} compliant Event Stream which is defined within this section and within the YANG Module of {{-rats-yang-tpm}}. This Event Stream contains YANG notifications which carry Evidence which assists a Verifier in appraising the Trustworthiness Level of an Attester. Data Nodes within {{configuring}} allow the configuration of this Event Stream’s contents on an Attester.
 
 This \<attestation\> Event Stream may only be exposed on Attesters supporting {{-device-attestation}}.  As with {{-device-attestation}}, it is up to the Verifier to understand which types of cryptoprocessors and keys are acceptable.
 
@@ -297,8 +297,8 @@ This YANG module imports modules from {{-rats-yang-tpm}} and {{RFC8639}}.  It is
 
 
 ~~~~ YANG
-<CODE BEGINS> ietf-rats-attestation-stream@2020-09-17.yang
-{::include ietf-tpm-remote-attestation-stream@2020-09-17.yang}
+<CODE BEGINS> ietf-rats-attestation-stream@2020-12-15.yang
+{::include ietf-tpm-remote-attestation-stream@2020-12-15.yang}
 <CODE ENDS>
 ~~~~
 
