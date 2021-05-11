@@ -30,7 +30,7 @@ module ietf-tpm-remote-attestation-stream {
     "This module contains conceptual YANG specifications for  
      subscribing to attestation streams being generated from TPM chips.
     
-     Copyright (c) 2020 IETF Trust and the persons identified
+     Copyright (c) 2021 IETF Trust and the persons identified
      as authors of the code. All rights reserved.
 
      Redistribution and use in source and binary forms, with
@@ -39,26 +39,12 @@ module ietf-tpm-remote-attestation-stream {
      BSD License set forth in Section 4.c of the IETF Trust's
      Legal Provisions Relating to IETF Documents
      (https://trustee.ietf.org/license-info).
-     
-     Redistribution and use in source and binary forms, with or
-     without modification, is permitted pursuant to, and subject to
-     the license terms contained in, the Simplified BSD License set
-     forth in Section 4.c of the IETF Trust's Legal Provisions
-     Relating to IETF Documents
-     (https://trustee.ietf.org/license-info).
 
      This version of this YANG module is part of RFC XXXX
      (https://www.rfc-editor.org/info/rfcXXXX); see the RFC
-     itself for full legal notices.
-
-     The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL',
-     'SHALL NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED',
-     'NOT RECOMMENDED', 'MAY', and 'OPTIONAL' in this document
-     are to be interpreted as described in BCP 14 (RFC 2119)
-     (RFC 8174) when, and only when, they appear in all
-     capitals, as shown here.";
+     itself for full legal notices.";
   
-  revision 2020-12-15 {
+  revision 2021-05-11 {
     description
       "Initial version.";    
     reference 
@@ -157,19 +143,21 @@ module ietf-tpm-remote-attestation-stream {
             was worthy of recording in a PCR.
             
             choices are of types defined by the identityref 
-            base tpm:attested_event_log_type";
-          
+            base tpm:attested_event_log_type";      
           case bios-event-log {
+            if-feature "tpm:bios";
             description
               "BIOS/UEFI event log format";
             uses tpm:bios-event-log;
           }
           case ima-event-log {
+            if-feature "tpm:ima";
             description
               "IMA event log format";
             uses tpm:ima-event-log;
           }
           case netequip-boot-event-log {
+            if-feature "tpm:netequip_boot";
             description
               "IMA event log format";
             uses tpm:network-equipment-boot-event-log;
@@ -180,7 +168,7 @@ module ietf-tpm-remote-attestation-stream {
   }  
 
   notification tpm12-attestation {
-    if-feature "taa:TPM12";
+    if-feature "taa:tpm12";
     description
       "Contains an instance of TPM1.2 style signed cryptoprocessor 
       measurements.  It is supplemented by unsigned Attester 
@@ -192,7 +180,7 @@ module ietf-tpm-remote-attestation-stream {
         "Allows a TPM quote to be associated with a certificate.";
     } 
     uses tpm:tpm12-attestation;
-    uses tpm:TPM12-hash-algo;
+    uses tpm:tpm12-hash-algo;
     list unsigned-pcr-values {
       description  
         "Allows notifications to be filtered by PCR number or
@@ -201,9 +189,9 @@ module ietf-tpm-remote-attestation-stream {
         applied against TCG structured data.";  
       leaf-list pcr-index {
         type tpm:pcr;
+        min-elements 1;
         description
           "PCR index number.";
-        min-elements 1;
       }
       leaf-list pcr-value {
         type binary;
@@ -214,7 +202,7 @@ module ietf-tpm-remote-attestation-stream {
   }
 
   notification tpm20-attestation {
-    if-feature "taa:TPM20";
+    if-feature "taa:tpm20";
     description
       "Contains an instance of TPM2 style signed cryptoprocessor 
       measurements.  It is supplemented by unsigned Attester 
@@ -247,18 +235,17 @@ module ietf-tpm-remote-attestation-stream {
     description
       "Defines platform wide 'attestation' stream subscription 
       parameters.";   
-    leaf marshalling-period {
-      config true;
+    leaf marshalling-period { 
       type uint8;
       default 5;
       description
         "The maximum number of seconds between the time an event  
         extends a PCR, and the 'tpm-extend' notification which reports 
         it to a subscribed Verifier.  This period allows multiple 
-        extend operations bundled together and handled as a group.";
+        extend operations bundled together and handled as a group.";  
     }
     leaf tpm12-subscribed-signature-scheme {
-      if-feature "taa:TPM12";
+      if-feature "taa:tpm12";
       type leafref {
         path "../tpm:attester-supported-algos" +
                "/tpm:tpm12-asymmetric-signing"; 
@@ -269,7 +256,7 @@ module ietf-tpm-remote-attestation-stream {
         'attestation' event stream.";
     }
     leaf tpm20-subscribed-signature-scheme {
-      if-feature "taa:TPM20";
+      if-feature "taa:tpm20";
       type leafref {
         path "../tpm:attester-supported-algos" +
                "/tpm:tpm20-asymmetric-signing"; 
@@ -280,7 +267,7 @@ module ietf-tpm-remote-attestation-stream {
         'attestation' event stream.";
     }    
     uses heartbeat{
-      if-feature "taa:TPM20";
+      if-feature "taa:tpm20";
     }
   }
   
@@ -289,7 +276,6 @@ module ietf-tpm-remote-attestation-stream {
       "Allows the configuration 'attestation' stream parameters for a 
       TPM.";  
     leaf subscription-aik {
-      config true;
       type tpm:certificate-name-ref;
       description 
         "Identifies the certificate-name associated with the 
@@ -302,10 +288,10 @@ module ietf-tpm-remote-attestation-stream {
         'attestation' event stream can be modified or tuned by a 
         network administrator.";
       case tpm12-stream {
-        if-feature "taa:TPM12";
+        if-feature "taa:tpm12";
         description
           "Configuration elements for a TPM1.2 event stream.";
-        uses tpm:TPM12-hash-algo;
+        uses tpm:tpm12-hash-algo;
         leaf-list tpm12-pcr-index {
           type tpm:pcr;
           description
@@ -313,10 +299,10 @@ module ietf-tpm-remote-attestation-stream {
         }
       }
       case tpm20-stream {
-        if-feature "taa:TPM20";
+        if-feature "taa:tpm20";
         description
           "Configuration elements for a TPM2.0 event stream.";
-        uses tpm:TPM20-hash-algo;
+        uses tpm:tpm20-hash-algo;
         leaf-list tpm20-pcr-index {
           type tpm:pcr;
           description
