@@ -64,13 +64,13 @@ informative:
 
 --- abstract
 
-This document defines how to subscribe to an Event Stream of attestation related Evidence on TPM-based network devices.
+This document defines how to subscribe to an Event Stream of attestation related RATS Conceptional Messages, such as Evidence or Event Logs, on TPM-based network devices.
 
 --- middle
 
 # Introduction
 
-{{-device-attestation}} and {{-rats-yang-tpm}} define the operational prerequisites and a YANG Model for the acquisition of Evidence from a TPM-based network device.  However there is a limitation inherant in the challenge-response interaction models upon which these documents are based. This limitation is that it is up to the Verifier to request Evidence.  The result is that the interval between the occurrence of a security event, and the event's visibility within the Relying Party can be unacceptably long.
+{{-device-attestation}} and {{-rats-yang-tpm}} define the operational prerequisites and a YANG Model for the acquisition of Evidence and other Conceptional Messages from a TPM-based network device. However there is a limitation inherent in the challenge-response interaction models upon which these documents are based. This limitation is that it is up to one RATS entity to request conceptional messages from another RATS entity, for example, a Verifier to request Evidence from an Attester. The result is that the interval between the occurrence of a security-relevant change event, and the event's visibility within the interested RATS entity, such as a Relying Party, can be unacceptably long.
 
 This limitation results in two adverse effects:
 
@@ -82,7 +82,7 @@ This specification addresses the first adverse effect by enabling a Verifier to 
 
 The second adverse effect results from the nonce based challenge-response of {{-rats-yang-tpm}}. In that document an Attester must wait for a new nonce from a Verifier before it generates a new TPM Quote.  To address delays resulting from such a wait, this specification enables freshness to be asserted asynchronously.
 
-By removing these two adverse effects, it becomes possible for a Verifier to continously maintain an appraisal of the Attested device without relying on continous polling.
+By removing these two adverse effects, it becomes possible for a Verifier to continuously maintain an appraisal of the Attested device without relying on continuous polling.
 
 # Terminology
 
