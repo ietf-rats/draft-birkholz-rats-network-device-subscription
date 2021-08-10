@@ -277,8 +277,7 @@ To accomplish this reduction, when an RFC8639 \<establish-subscription\> RPC is 
 To verify the value of a PCR, a Verifier must either know that the value is a known good value {{KGV}} or be able to reconstruct the hash value by viewing all the PCR-Extends since the Attester rebooted. Wherever a hash reconstruction might be needed, the \<attestation\> Event Stream MUST support the RFC8639 \<replay\> feature. Through the \<replay\> feature, it is possible for a Verifier to retrieve and sequentially hash all of the PCR extending events since an Attester booted. And thus, the Verifier has access to all the evidence needed to verify a PCR’s current value.
 
 
-
-{: #configuring title="Configuring the Attestation Stream"}
+{: #configuring "Configuring the Attestation Stream"}
 ## Configuring the \<attestation\> Event Stream
 
 {{attestationconfig}} is tree diagram which exposes the operator configurable elements of the \<attestation\> Event Stream. This allows an Attester to select what information should be available on the stream. A fetch operation also allows an external device such as a Verifier to understand the current configuration of stream.
