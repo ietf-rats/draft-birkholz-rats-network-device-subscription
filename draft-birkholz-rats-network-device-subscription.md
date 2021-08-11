@@ -123,7 +123,7 @@ generateEvidence(subHandle, PcrSelection, collectedClaims)     |
      |                                                         |
      ~                                                         ~
    time(VG')                                                   |
-valueGeneration(targetEnvironment)                             |
+generateClaimes(targetEnvironment)                             |
      | => claims                                               |
      |                                                         |
    time(EG')                                                   |
