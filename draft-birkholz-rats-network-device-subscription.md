@@ -100,26 +100,44 @@ The following terms are imported from {{-rats-arch}}: Attester, Conceptual Messa
 {{sequence}} below is a sequence diagram which updates Figure 5 of {{-rats-riv}}.  This sequence diagram replaces the {{-rats-riv}} challenge-response interaction model with an {{RFC8639}} Dynamic Subscription to an  \<attestation\> Event Stream.  The contents of the \<attestation\> Event Stream are defined below within {{attestationstream}}.
 
 ~~~~
-.----------.                        .--------------------------.
-| Attester |                        | Relying Party / Verifier |
-'----------'                        '--------------------------'
-   time(VG)                                              |
-     |<---------establish-subscription(<attestation>)--time(NS)
-     |                                                   |
-   time(EG)                                              |
-     |--filter(<pcr-extend>)---------------------------->|
-     |--<tpm12-attestation> or <tpm20-attestation>------>|
-     |                                                   |
-     |                      verify time(EG) Evidence @ time(RG,RA)
-     |                                                   |
-     ~                                                   ~
-   time(VG',EG')                                         |
-     |--filter(<pcr-extend>)---------------------------->|
-     |--<tpm12-attestation> or <tpm20-attestation>------>|
-     |                                                   |
-     |                     verify time(EG') Evidence @ time(RG',RA')
-
-
+.----------.                            .--------------------------.
+| Attester |                            | Relying Party / Verifier |
+'----------'                            '--------------------------'
+   time(VG)                                                    |
+generateClaims(targetEnvironment)                              |
+     | => claims, eventLogs                                    |
+     |                                                         |
+     |<---------establish-subscription(<attestation>)------time(NS)
+     |                                                         |
+   time(EG)                                                    |
+generateEvidence(subHandle, PcrSelection, collectedClaims)     |
+     | => SignedPcrEvidence(subHandle, PcrSelection)           |
+     | => LogEvidence(collectedClaims)                         |
+     |                                                         |
+     |--filter(<pcr-extend>)---------------------------------->|
+     |--<tpm12-attestation> or <tpm20-attestation>------------>|
+     |                                                         |
+     |                                                  time(RG,RA)
+     |     appraiseEvidence(SignedPcrEvidence, eventLog, refClaims)
+     |                                    attestationResult <= |
+     |                                                         |
+     ~                                                         ~
+   time(VG')                                                   |
+valueGeneration(targetEnvironment)                             |
+     | => claims                                               |
+     |                                                         |
+   time(EG')                                                   |
+generateEvidence(subHandle, PcrSelection, collectedClaims)     |
+     | => SignedPcrEvidence(subHandle, PcrSelection)           |
+     | => LogEvidence(collectedClaims)                         |
+     |                                                         |
+     |--filter(<pcr-extend>)---------------------------------->|
+     |--<tpm12-attestation> or <tpm20-attestation>------------>|
+     |                                                         |
+     |                                                 time(RG',RA')
+     |    appraiseEvidence(SignedPcrEvidence, eventLog, refClaims)
+     |                                    attestationResult <= |
+     |                                                         |
 ~~~~
 {: #sequence title="YANG Subscription Model for Remote Attestation"}
 
