@@ -1,7 +1,7 @@
 ---
 title: Attestation Event Stream Subscription
 abbrev: RATS Subscription
-docname: draft-birkholz-rats-network-device-subscription-latest0
+docname: draft-birkholz-rats-network-device-subscription-latest
 wg: RATS Working Group
 stand_alone: true
 ipr: trust200902
@@ -141,28 +141,21 @@ generateEvidence(subHandle, PcrSelection, collectedClaims)     |
 ~~~~
 {: #sequence title="YANG Subscription Model for Remote Attestation"}
 
-* time(VG,RG,RA) are identical to the corresponding time definitions from {{-rats-riv}}. Time(RG',RA') are subsequent instances of the corresponding times.
+* time(VG,RG,RA) are identical to the corresponding time definitions from {{-rats-riv}}.
 
-* time(RG',RA') are subsequent instances of the corresponding times from Figure 5 of {{-rats-riv}}.
+* time(VG',RG',RA') are subsequent instances of the corresponding times from Figure 5 in {{-rats-riv}}.
 
-* time(NS): The Verifier generates a nonce and makes an {{RFC8639}} \<establish-subscription\> request.  This request also includes the augmentations defined in this document's YANG model.  Key subscription RPC parameters include:
-
-  * the nonce
-
-  * a set of PCRs of interest which the Verifier wants to appraise
-
+* time(NS) – the Verifier generates a nonce and makes an {{RFC8639}} \<establish-subscription\> request using the nonce as a subscription handle ('subHandle'). This request also includes the augmentations defined in this document's YANG model. Key subscription RPC parameters include:
+  * the nonce used as the subHandle,
+  * a set of PCRs of interest which the Verifier wants to appraise, and
   * an optional filter which can reduce the logged events on the \<attestation\> stream pushed to the Verifier.
 
-* time(EG) – An initial response of Evidence is returned to the Verifier.  This includes:
+* time(EG) – an initial response of Evidence is returned to the Verifier. This includes:
+  * a replay of filtered log entries which have extended into a PCR of interest since boot are sent in the \<pcr-extend\> notification, and
+  * a signed TPM quote that contains at least the PCRs from the \<establish-subscription\> RPC are included in a \<tpm12-attestation\> or \<tpm20-attestation\>). This quote must have included the subHandle provided at time(NS).
 
-  * A replay of filtered log entries which have extended into a PCR of interest since boot are sent in the \<pcr-extend\> notification.
-
-  * A signed TPM quote that contains at least the PCRs from the \<establish-subscription\> RPC are included in a \<tpm12-attestation\> or \<tpm20-attestation\>).  This quote must have included the nonce provided at time(NS).
-
-* time(VG',EG') – This occurs when a PCR is extended subsequent to time(EG).  Immediately after the extension, the following information needs to be pushed to the Verifier:
-
-  * Any values extended into a PCR of interest, and
-
+* time(VG',EG') – this occurs when a PCR is extended subsequent to time(EG). Immediately after the extension, the following information needs to be pushed to the Verifier:
+  * any values extended into a PCR of interest, and
   * a signed TPM Quote showing the result the PCR extension.
 
 ## Continuously Verifying Freshness
