@@ -79,7 +79,7 @@ In essence, the limitation of poll-based interactions results in two adverse eff
 
 2. If they were to be streamed, the Conceptual Messages, such as Evidence, are not appraisable for freshness in every scenario.
 
-This specification addresses the first adverse effect by enabling a consumer of Conceptual Messages (the subscriber) to request a continuous stream of new or updated Conceptual Messages via a subscription to an \<attestation\> Event Stream {{RFC8639}}, which exists upon the producer of Conceptual Messages (the publisher). In the case of a Verifier's subscription to an Attester's Evidence, the Attester will continuously stream a requested set of freshly generated Evidence to the subscribing Verifier.
+This specification addresses the first adverse effect by enabling a consumer of Conceptual Messages (the subscriber) to request a continuous stream of new or updated Conceptual Messages via an {{RFC8639}} subscription to an \<attestation\> Event Stream.  This new Event Stream is defined in this document, and exists upon the producer of Conceptual Messages (the publisher). In the case of a Verifier's subscription to an Attester's Evidence, the Attester will continuously stream a requested set of freshly generated Evidence to the subscribing Verifier.
 
 The second adverse effect results from the use of nonces in the challenge-response interaction model {{-rats-models}} realized in {{-rats-yang-tpm-charra}}. In that document, an Attester must wait for a new nonce from a Verifier before it generates a new TPM Quote. To address delays resulting from such a wait, this specification enables freshness to be asserted asynchronously via the streamed attestation interaction model {{-rats-models}}.
 
