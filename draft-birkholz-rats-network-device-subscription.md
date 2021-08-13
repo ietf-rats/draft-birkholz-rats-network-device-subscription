@@ -81,7 +81,7 @@ In essence, the limitation of poll-based interactions results in two adverse eff
 
 This specification addresses the first adverse effect by enabling a consumer of Conceptual Messages (the subscriber) to request a continuous stream of new or updated Conceptual Messages via a subscription to an \<attestation\> Event Stream {{RFC8639}}, which exists upon the producer of Conceptual Messages (the publisher). In the case of a Verifier's subscription to an Attester's Evidence, the Attester will continuously stream a requested set of freshly generated Evidence to the subscribing Verifier.
 
-The second adverse effect results from the use of nonces in the challenge-response interaction model {{-rats-models}} realized in {{-rats-yang-tpm-charra}}. In that document, an Attester must wait for a new nonce from a Verifier before it generates a new TPM Quote. To address delays resulting from such a wait, this specification enables freshness to be asserted asynchronously via the streamed attestation interaction model {{-rats-models}}.
+The second adverse effect results from the use of nonces in the challenge-response interaction model {{-rats-models}} realized in {{-rats-yang-tpm-charra}}. In that document, an Attester must wait for a new nonce from a Verifier before it generates a new TPM Quote. To address delays resulting from such a wait, this specification enables freshness to be asserted asynchronously via the streaming attestation interaction model {{-rats-models}}.
 
 By removing these two adverse effects via the YANG augment specified in this memo, it becomes possible, for example, for a RATS Verifier to maintain a continuous appraisal procedure of an Attester's Evidence without relying on continuous polling.
 
@@ -94,6 +94,8 @@ The following terms are imported from {{-rats-arch}}: Attester, Conceptual Messa
 {::boilerplate bcp14}
 
 # Operational Model
+
+{{-rats-riv}} describes the conveyance of 
 
 ## Sequence Diagram
 
