@@ -162,7 +162,7 @@ generateEvidence(nonce, PcrSelection, collectedClaims)         |
 
 * time(EG) – an initial response of Evidence is returned to the Verifier. This includes:
   * a replay of filtered log entries which have extended into a PCR of interest since boot are sent in the \<pcr-extend\> notification, and
-  * a signed TPM quote that contains at least the PCRs from the \<establish-subscription\> RPC are included in a \<tpm12-attestation\> or \<tpm20-attestation\>). This quote must have included the subHandle provided at time(NS).
+  * a signed TPM quote that contains at least the PCRs from the \<establish-subscription\> RPC are included in a \<tpm12-attestation\> or \<tpm20-attestation\>). This quote must have included the nonce provided at time(NS).
 
 * time(VG',EG') – this occurs when a PCR is extended subsequent to time(EG). Immediately after the extension, the following information needs to be pushed to the Verifier:
   * any values extended into a PCR of interest, and
