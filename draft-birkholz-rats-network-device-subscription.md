@@ -137,7 +137,7 @@ generateClaimes(targetEnvironment)                             |
      | => claims                                               |
      |                                                         |
    time(EG')                                                   |
-generateEvidence(nonce, PcrSelection, collectedClaims)         |
+generateEvidence(handle, PcrSelection, collectedClaims)        |
      | => SignedPcrEvidence(nonce, PcrSelection)               |
      | => LogEvidence(collectedClaims)                         |
      |                                                         |
@@ -165,8 +165,9 @@ generateEvidence(nonce, PcrSelection, collectedClaims)         |
   * a signed TPM quote that contains at least the PCRs from the \<establish-subscription\> RPC are included in a \<tpm12-attestation\> or \<tpm20-attestation\>). This quote must have included the nonce provided at time(NS).
 
 * time(VG',EG') – this occurs when a PCR is extended subsequent to time(EG). Immediately after the extension, the following information needs to be pushed to the Verifier:
-  * any values extended into a PCR of interest, and
-  * a signed TPM Quote showing the result the PCR extension.
+  * any values extended into a PCR of interest,
+  * a signed TPM Quote showing the result the PCR extension, and
+  * and a handle (see Section 6. in {{-rats-models}}, which is either the initially received nonce or a more recently received Epoch ID (see Section 10.3. in {{-rats-arch}} that contains a new nonce or equivalent qualified data.
 
 ## Continuously Verifying Freshness
 
