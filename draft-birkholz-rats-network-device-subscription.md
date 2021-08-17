@@ -169,6 +169,9 @@ generateEvidence(handle, PcrSelection, collectedClaims)        |
   * a signed TPM Quote showing the result the PCR extension, and
   * and a handle (see Section 6. in {{-rats-models}}, which is either the initially received nonce or a more recently received Epoch ID (see Section 10.3. in {{-rats-arch}} that contains a new nonce or equivalent qualified data.
 
+One way to acquire a new time synchronisation that allows for the reuse of the initially received nonce as a fresh handle is elaborated on in the follow section {{freshness-handles}}.
+
+{: #freshness-handles "Continuously Verifying Freshness"}
 ## Continuously Verifying Freshness
 
 As there is no new Verifier nonce provided at time(EG'), it is important to validate the freshness of TPM Quotes which are delivered at that time.  The method of doing this verification will vary based on the capabilities of the TPM cryptoprocessor used.
